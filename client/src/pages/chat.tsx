@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Sidebar } from '@/components/chat/Sidebar';
-import { ChatMessage } from '@/components/chat/ChatMessage';
+import ChatMessage from '@/components/chat/ChatMessage';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { ConnectionStatus } from '@/components/chat/ConnectionStatus';
 import { useWebSocket } from '@/hooks/useWebSocket';
