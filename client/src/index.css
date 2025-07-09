@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+  
+  /* Trading theme colors */
+  --trading-dark: hsl(215, 27.9%, 6.5%);
+  --trading-card: hsl(215, 19.3%, 8.8%);
+  --trading-green: hsl(172, 100%, 41.6%);
+  --trading-red: hsl(0, 68.4%, 63.3%);
+  --trading-orange: hsl(39, 100%, 50%);
+  --trading-blue: hsl(208, 100%, 56.3%);
+  --trading-border: hsl(215, 16.3%, 18.8%);
+  --trading-text: hsl(210, 40%, 97.6%);
+  --trading-text-muted: hsl(215, 13.8%, 52.5%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .bg-trading-dark {
+    background-color: var(--trading-dark);
+  }
+  
+  .bg-trading-card {
+    background-color: var(--trading-card);
+  }
+  
+  .bg-trading-green {
+    background-color: var(--trading-green);
+  }
+  
+  .bg-trading-red {
+    background-color: var(--trading-red);
+  }
+  
+  .bg-trading-orange {
+    background-color: var(--trading-orange);
+  }
+  
+  .bg-trading-blue {
+    background-color: var(--trading-blue);
+  }
+  
+  .border-trading-border {
+    border-color: var(--trading-border);
+  }
+  
+  .text-trading-text {
+    color: var(--trading-text);
+  }
+  
+  .text-trading-text-muted {
+    color: var(--trading-text-muted);
+  }
+  
+  .text-trading-green {
+    color: var(--trading-green);
+  }
+  
+  .text-trading-red {
+    color: var(--trading-red);
+  }
+  
+  .text-trading-blue {
+    color: var(--trading-blue);
+  }
+  
+  .text-trading-dark {
+    color: var(--trading-dark);
+  }
+  
+  .hover\:bg-trading-green\/90:hover {
+    background-color: color-mix(in srgb, var(--trading-green) 90%, transparent);
+  }
+  
+  .hover\:bg-trading-green\/20:hover {
+    background-color: color-mix(in srgb, var(--trading-green) 20%, transparent);
+  }
+  
+  .hover\:bg-trading-dark\/50:hover {
+    background-color: color-mix(in srgb, var(--trading-dark) 50%, transparent);
+  }
+  
+  .hover\:text-trading-green:hover {
+    color: var(--trading-green);
+  }
+  
+  .hover\:text-trading-text:hover {
+    color: var(--trading-text);
+  }
+  
+  .placeholder-trading-text-muted::placeholder {
+    color: var(--trading-text-muted);
+  }
+  
+  .focus\:ring-trading-green:focus {
+    --tw-ring-color: var(--trading-green);
+  }
+}
