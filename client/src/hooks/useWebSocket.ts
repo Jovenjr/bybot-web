@@ -1,103 +1,73 @@
 import { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
-interface MCPServer {
+export interface MCPStatus {
   id: string;
   name: string;
-  type: 'stdio' | 'http';
-  status: 'connected' | 'disconnected' | 'error';
+  type: string;
+  status: 'connected' | 'error' | 'disconnected';
   latency: number;
   requestCount: number;
 }
 
-interface WebSocketMessage {
-  type: string;
-  [key: string]: any;
-}
-
-export function useWebSocket() {
+export function useWebSocket(onMessage: (message: any) => void) {
+  const { token } = useAuth();
   const [isConnected, setIsConnected] = useState(false);
-  const [mcpServers, setMcpServers] = useState<MCPServer[]>([]);
-  const wsRef = useRef<WebSocket | null>(null);
-  const messageHandlers = useRef<Map<string, (message: WebSocketMessage) => void>>(new Map());
+  const [mcpServers, setMcpServers] = useState<MCPStatus[]>([]);
+  const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        const wsPort = window.location.port ? `:${window.location.port}` : ':8030';
-    const wsUrl = `${protocol}//${window.location.hostname}${wsPort}/ws`;
-    
-    const connectWebSocket = () => {
-      const ws = new WebSocket(wsUrl);
-      wsRef.current = ws;
+    if (token) return;
 
-      ws.onopen = () => {
-        setIsConnected(true);
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    // Solución: Usar el puerto de la ubicación o default a 8030 para desarrollo local
+    const wsPort = window.location.port || '8030';
+    const wsUrl = `${protocol}//${window.location.hostname}:${wsPort}/?token=${token}`;
+
+    const connectWebSocket = () => {
+      socketRef.current = new WebSocket(wsUrl);
+
+      socketRef.current.onopen = () => {
         console.log('WebSocket connected');
+        setIsConnected(true);
       };
 
-      ws.onmessage = (event) => {
-        try {
-          const message: WebSocketMessage = JSON.parse(event.data);
-          console.log('WebSocket message received:', message);
-          
-          // Handle MCP server status updates
-          if (message.type === 'mcp_status' && message.servers) {
-            console.log('Setting MCP servers:', message.servers);
-            setMcpServers(message.servers);
-          }
-          
-          // Call registered handlers
-          messageHandlers.current.forEach((handler) => {
-            handler(message);
-          });
-        } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
+      socketRef.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log('WebSocket message received:', data);
+        if (data.type === 'mcp_status') {
+          console.log('Setting MCP servers:', data.servers);
+          setMcpServers(data.servers);
+        } else {
+          onMessage(data);
         }
       };
 
-      ws.onclose = () => {
-        setIsConnected(false);
+      socketRef.current.onclose = () => {
         console.log('WebSocket disconnected');
-        
-        // Reconnect after 3 seconds
-        setTimeout(connectWebSocket, 3000);
+        setIsConnected(false);
+        // Intentar reconectar después de un breve retraso
+        setTimeout(connectWebSocket, 5000);
       };
 
-      ws.onerror = (error) => {
+      socketRef.current.onerror = (error) => {
         console.error('WebSocket error:', error);
-        setIsConnected(false);
+        socketRef.current?.close();
       };
     };
 
     connectWebSocket();
 
     return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
+      socketRef.current?.close();
     };
-  }, []);
+  }, [token, onMessage]);
 
   const sendMessage = (message: any) => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify(message));
-      return true;
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
+      socketRef.current.send(JSON.stringify(message));
     }
-    return false;
   };
 
-  const addMessageHandler = (id: string, handler: (message: WebSocketMessage) => void) => {
-    messageHandlers.current.set(id, handler);
-  };
-
-  const removeMessageHandler = (id: string) => {
-    messageHandlers.current.delete(id);
-  };
-
-  return {
-    isConnected,
-    mcpServers,
-    sendMessage,
-    addMessageHandler,
-    removeMessageHandler,
-  };
+  return { isConnected, mcpServers, sendMessage };
 }
